@@ -10,12 +10,16 @@
 
   module.exports = function(opt) {
     var stream;
+    if (opt == null) {
+      opt = {};
+    }
     stream = through.obj(function(file, enc, callback) {
       var templateString;
       if (file.isNull()) {
         this.push(file);
         return callback();
       } else if (file.isBuffer()) {
+        opt['filename'] = file.path;
         templateString = jade.compileClient(file.contents.toString(), opt).toString();
         file.contents = new Buffer('module.exports = ' + templateString);
         file.path = replaceExt(file.path, '.js');
